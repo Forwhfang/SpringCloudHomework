@@ -21,7 +21,7 @@
 		name: "myRate",
 		props: {
 			/* 必填 */
-			/* 当前评分率 */
+			/* 当前评分率, 范围：0~1 */
 			rate:{
 				type: Number,
 				required: true

@@ -10,7 +10,7 @@
 		<div class="books_root_body">
 			<div v-for="(books_index, index) in booksShowing" :key="index">
 				<div class="books_root_body_book">
-					<img class="books-book_image" :src="books[books_index].imgSrc" />
+					<img class="books-book_image" :src="books[books_index].imgSrc" :ref="`book_image_${index}`" @load="justifyImage(index, 100)"/>
 					<div class="books-book_content">
 						<div class="books-book-head">
 							<div class="books-book-title">{{books[books_index].title}}</div>
@@ -131,6 +131,18 @@
 				console.log(_id)
 				let deleteRe = await this.$refs.my_api.deleteBookById(_id);
 				console.log(deleteRe)
+			},
+			justifyImage(_index, _width){
+				/**
+				 * 图片按设置宽度进行等比例放缩
+				 * @param: {Number} _index v-for列表index
+				 * @param: {Number} _width 图片要显示的宽度
+				 * */
+				let originWidth = this.$refs[`book_image_${_index}`][0].width;
+				let originHeight = this.$refs[`book_image_${_index}`][0].height;
+				let scale = _width/originWidth;
+				this.$refs[`book_image_${_index}`][0].width = _width;
+				this.$refs[`book_image_${_index}`][0].height = originHeight * scale;
 			}
 		}
 	}
@@ -179,7 +191,6 @@
 		left: -30px;
 		width: 25px;
 		height: 25px;
-
 	}
 	.books-search_icon:hover {
 		transform: scale(1.2);
@@ -199,7 +210,6 @@
 	}
 	.books-book_image{
 		margin-left: 14px;
-		width: 100px;
 		box-shadow: 3px 3px 6px #717171;
 	}
 	.books-book_content{
