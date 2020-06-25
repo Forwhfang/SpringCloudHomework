@@ -2,42 +2,45 @@
     <div class="bg">
         <div class="form">
             <div class="form-head">{{title}}</div>
-
+            <img :src="require('../assets/modification/cancel.png')" @click="cancel" class="cancel">
             <div class="mandatory">
-            <div class="poster"></div>
-            <div class="text">
-                <div class="form-item">
-                <label class="item-label" for="name">书名</label>
-                <input class="item-input" id="name" v-model="name" />
-                </div>
-                <div class="form-item">
-                <label class="item-label" for="author">作者</label>
-                <input class="item-input" id="author" v-model="author" />
+                <img class="poster" :src="imgUrl" @click="chooseFile">
+                <input ref="filesInput" @change="uploadFile" type="file" accept="image/png, image/jpeg" style="display: none;" />
+                <div class="text">
+                    <div class="form-item">
+                        <label class="item-label" for="name">书名</label>
+                        <input class="item-input" id="name" v-model="name" />
+                    </div>
+                    <div class="form-item">
+                        <label class="item-label" for="author">作者</label>
+                        <input class="item-input" id="author" v-model="author" />
+                    </div>
                 </div>
             </div>
-            </div>
-
             <div class="optional">
-            <div class="form-item">
-                <label class="item-label" for="translator">译者</label>
-                <input class="item-input" id="translator" v-model="translator" />
+                <div class="form-item">
+                    <label class="item-label" for="translator">译者</label>
+                    <input class="item-input" id="translator" v-model="translator" />
+                </div>
+                <div class="form-item">
+                    <label class="item-label" for="press">出版社</label>
+                    <input class="item-input" id="press" v-model="press" />
+                </div>
+                <div class="form-item">
+                    <label class="item-label" for="pubdate">出版日期</label>
+                    <input class="item-input" id="pubdate" v-model="pubdate" />
+                </div>
+                <div class="form-item">
+                    <label class="item-label" for="quote">简介</label>
+                    <input class="item-input" id="quote" v-model="quote" />
+                </div>
+                <div class="form-item">
+                    <label class="item-label" for="star">评分</label>
+                    <input class="item-input" id="star" v-model="star" />
+                </div>
             </div>
-            <div class="form-item">
-                <label class="item-label" for="press">出版社</label>
-                <input class="item-input" id="press" v-model="press" />
-            </div>
-            <div class="form-item">
-                <label class="item-label" for="pubdate">出版日期</label>
-                <input class="item-input" id="pubdate" v-model="pubdate" />
-            </div>
-            <div class="form-item">
-                <label class="item-label" for="quote">简介</label>
-                <input class="item-input" id="quote" v-model="quote" />
-            </div>
-            <div class="form-item">
-                <label class="item-label" for="star">评分</label>
-                <input class="item-input" id="star" v-model="star" />
-            </div>
+            <div class="submit-field">
+                <button class="submit">提交</button>
             </div>
         </div>
     </div>
@@ -52,11 +55,38 @@ export default {
     data() {
         return {
             title: '书籍',
+            imgUrl: require('../assets/modification/defaultImage.png'),
+            name: '',
+            author: '',
+            translator: '',
+            press: '',
+            pubdate: '',
+            quote: '',
+            star: '',
         }
     },
+    methods: {
+        chooseFile: function() {
+            this.$refs.filesInput.click()
+        },
+        uploadFile: function(e) {
+            let file = e.target.files[0]
+            let reader = new FileReader()
+            reader.onloadend = () => { this.imgUrl = reader.result }
+            reader.readAsDataURL(file)
+        },
+    },
     watch: {
-        book(v) {
-            if (v) this.title = "修改"
+        book(val) {
+            this.title = val ? '修改书籍' : '增加书籍'
+            this.imgUrl = val.imgUrl
+            this.name = val.name
+            this.author = val.author
+            this.translator = val.translator
+            this.press = val.press
+            this.pubdate = val.pubdate
+            this.quote = val.quote
+            this.star = val.star
         }
     }
 };
@@ -71,9 +101,20 @@ export default {
     height: 100%;
     background-color: #f6f6f1;
 }
+.cancel {
+    width: 20px;
+    height: 20px;
+    position: absolute;
+    top: 30px;
+    left: 20px;
+}
+.cancel:hover {
+    cursor: pointer;
+}
 .form {
-    margin: 20px auto;
+    margin: 15px auto;
     padding: 20px;
+    position: relative;
 
     border: 1px solid gray;
     box-shadow: 10px 10px 25px 1px lightgray;
@@ -90,7 +131,7 @@ export default {
     color: rgb(93, 70, 49);
 }
 .form-item {
-    margin-bottom: 20px;
+    margin-bottom: 12px;
     display: flex;
     flex-direction: column;
     align-items: flex-start;
@@ -115,14 +156,39 @@ export default {
 }
 .poster {
     width: 20px;
-    height: 150px;
+    height: 142px;
     margin-right: 20px;
     margin-bottom: 20px;
     flex-grow: 1;
-
-    border: 1px solid black;
+    box-shadow: 3px 3px 6px lightgray;
+}
+.poster:hover {
+    cursor: pointer;
+    box-shadow: 3px 3px 10px lightgray;
 }
 .text {
-    flex-grow: 2;
+    flex-grow: 3;
+}
+.submit-field {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    margin-top: 20px;
+}
+.submit {
+    width: 80px;
+    height: 40px;
+    border: 0.2px solid lightgray;
+    background-color: #f6f6f1;
+
+    font-size: large;
+    font-weight: bolder;
+    letter-spacing: 5px;
+    color: rgb(93, 70, 49);
+}
+.submit:hover {
+    cursor: pointer;
+    background-color: rgba(246, 246, 241, 0.6);
 }
 </style>
