@@ -1,0 +1,9 @@
+zuul:
+  routes:
+    order:
+      path: /orderservice/**
+      serviceId: library-order
+ribbon:
+  ReadTimeout: 12000
+  ConnectTimeout: 12000
+

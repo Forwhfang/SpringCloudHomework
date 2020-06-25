@@ -1,0 +1,18 @@
+server:
+  port: 8002
+spring:
+  application:
+    name: library-config
+  profiles:
+    active: native
+  cloud:
+    config:
+      enabled: true
+      server:
+        native:
+          search-locations: classpath:/config
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://127.0.0.1:8001/eureka
+
