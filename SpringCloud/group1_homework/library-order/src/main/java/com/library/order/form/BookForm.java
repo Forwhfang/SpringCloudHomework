@@ -11,16 +11,19 @@ import lombok.Data;
 @Data
 public class BookForm {
     private Integer id;
-
-    private String goodsName;
-
-    private String address;
-
+    private String imgUrl;
     private String name;
+    private double star;
+    private String quotes;
+    private String author;
+    private String translator;
+    private String pubdate;
+    private String press;
 
-    private String phone;
-
-    private Integer count;
-
-    private Double money;
+    public String getUrl() {
+        return imgUrl;
+    }
+    public void setUrl(String newUrl) {
+        this.imgUrl = newUrl;
+    }
 }

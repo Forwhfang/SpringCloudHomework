@@ -17,23 +17,29 @@ public class Book {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-
-    @Column(name = "goods_name", nullable = false, length = 50)
-    private String goodsName;
-
-    @Column(name = "address", nullable = false, length = 50)
-    private String address;
+    // length = 50
+    @Column(name = "imgUrl", nullable = false)
+    private String imgUrl;
 
     @Column(name = "name", nullable = false, length = 50)
     private String name;
 
-    @Column(name = "phone", nullable = false, length = 50)
-    private String phone;
+    @Column(name = "star", nullable = false, length = 10)
+    private double star;
 
-    @Column(name = "count", nullable = false, length = 50)
-    private Integer count;
+    @Column(name = "quotes", nullable = false, length = 250)
+    private String quotes;
 
-    @Column(name = "money", nullable = false, length = 50)
-    private Double money;
+    @Column(name = "author", nullable = false, length = 50)
+    private String author;
+
+    @Column(name = "translator", nullable = true, length = 50)
+    private String translator;
+
+    @Column(name = "pubdate", nullable = true, length = 50)
+    private String pubdate;
+
+    @Column(name = "press", nullable = true, length = 50)
+    private String press;
 
 }
