@@ -3,21 +3,29 @@
         <div class="form">
             <div class="form-head">{{title}}</div>
             <img :src="require('../assets/modification/cancel.png')" @click="cancel" class="cancel">
-            <div class="mandatory">
+            <div class="flex-row">
                 <img class="poster" :src="imgUrl" @click="chooseFile">
                 <input ref="filesInput" @change="uploadFile" type="file" accept="image/png, image/jpeg" style="display: none;" />
                 <div class="text">
                     <div class="form-item">
-                        <label class="item-label" for="name">书名</label>
+                        <label class="item-label" for="name">书名<span class="mandatory">*</span></label>
                         <input class="item-input" id="name" v-model="name" />
                     </div>
                     <div class="form-item">
-                        <label class="item-label" for="author">作者</label>
+                        <label class="item-label" for="author">作者<span class="mandatory">*</span></label>
                         <input class="item-input" id="author" v-model="author" />
                     </div>
                 </div>
             </div>
-            <div class="optional">
+            <div>
+                <div class="form-item">
+                    <label class="item-label" for="quote">简介<span class="mandatory">*</span></label>
+                    <input class="item-input" id="quote" v-model="quote" />
+                </div>
+                <div class="form-item">
+                    <label class="item-label" for="star">评分<span class="mandatory">*</span></label>
+                    <input class="item-input" id="star" v-model="star" />
+                </div>
                 <div class="form-item">
                     <label class="item-label" for="translator">译者</label>
                     <input class="item-input" id="translator" v-model="translator" />
@@ -28,15 +36,7 @@
                 </div>
                 <div class="form-item">
                     <label class="item-label" for="pubdate">出版日期</label>
-                    <input class="item-input" id="pubdate" v-model="pubdate" />
-                </div>
-                <div class="form-item">
-                    <label class="item-label" for="quote">简介</label>
-                    <input class="item-input" id="quote" v-model="quote" />
-                </div>
-                <div class="form-item">
-                    <label class="item-label" for="star">评分</label>
-                    <input class="item-input" id="star" v-model="star" />
+                    <datepicker class="item-input-datepicker" id="pubdate" :date="pubdate" :option="dateOption"></datepicker>
                 </div>
             </div>
             <div class="submit-field">
@@ -47,19 +47,43 @@
 </template>
 
 <script>
+import datepicker from "vue-datepicker/vue-datepicker-es6.vue";
 export default {
     name: "Modification",
+    components: {
+        datepicker
+    },
     data() {
         return {
             title: '书籍',
+            id: '',
             imgUrl: require('../assets/modification/defaultImage.png'),
             name: '',
             author: '',
             translator: '',
             press: '',
-            pubdate: '',
+            pubdate: { time: '' },
             quote: '',
             star: '',
+            dateOption: {
+                type: 'day',
+                week: ['一', '二', '三', '四', '五', '六', '日'],
+                month: ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12'],
+                format: 'YYYY-MM-DD',
+                inputStyle: {
+                    width: '100%',
+                    height: '18px',
+                    padding: '5px',
+                },
+                color: {
+                    header: 'rgb(93, 70, 49)',
+                    headerText: 'rgb(255, 255, 255)',
+                },
+                buttons: {
+                    ok: '确定',
+                    cancel: '取消',
+                }
+            }
         }
     },
     methods: {
@@ -77,11 +101,54 @@ export default {
             // TODO
             // 触发事件
         },
+        helper: function(elemId, hint) {
+            let elem = document.getElementById(elemId)
+			if (elem) {
+                elem.value = ''
+                elem.placeholder = hint || ''
+				elem.classList.add('shake')
+				setTimeout(()=>{ elem.classList.remove('shake') }, 800)
+			}
+        },
+        validate: function() {
+            if (!this.name) {
+                this.helper('name', '书名不能为空')
+                return false
+            }
+            if (!this.author) {
+                this.helper('author', '作者不能为空')
+                return false
+            }
+            if (!this.quote) {
+                this.helper('quote', '简介不能为空')
+                return false
+            }
+            if (!this.star) {
+                this.helper('star', '评分不能为空')
+                return false
+            }
+            return true
+        },
         submit: function() {
-            this.$router.go(-1)
-            // TODO
-            // 网络请求
-            // 触发事件
+            let isLegal = this.validate()
+            if (isLegal) {
+                let formData = {
+                    id: this.id,
+                    imgUrl: this.imgUrl,
+                    name: this.name,
+                    author: this.author,
+                    translator: this.translator,
+                    press: this.press,
+                    pubdate: this.pubdate.time,
+                    quote: this.quote,
+                    star: this.star,
+                }
+                console.log(formData)
+                this.$router.go(-1)
+                // TODO
+                // 网络请求
+                // 触发事件
+            }
         }
     },
     created(){
@@ -159,7 +226,14 @@ export default {
     height: 18px;
     padding: 5px;
 }
+.item-input-datepicker {
+    width: 100%;
+    height: 18px;
+}
 .mandatory {
+    color: red;
+}
+.flex-row {
     display: flex;
     flex-direction: row;
     justify-content: center;
@@ -201,5 +275,15 @@ export default {
 .submit:hover {
     cursor: pointer;
     background-color: rgba(246, 246, 241, 0.6);
+}
+.shake {
+    animation: shake 800ms ease-in-out;
+}
+@keyframes shake {
+    10%, 90% { transform: translate3d(0, -1px, 0); }
+    20%, 80% { transform: translate3d(0, +2px, 0); }
+    30%, 70% { transform: translate3d(0, -4px, 0); }
+    40%, 60% { transform: translate3d(0, +4px, 0); }
+    50% { transform: translate3d(0, -4px, 0); }
 }
 </style>
