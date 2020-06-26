@@ -4,7 +4,7 @@ create table tb_book(
     id int primary key NOT NULL AUTO_INCREMENT,
     imgUrl TEXT,
     name VARCHAR(255),
-    star VARCHAR(20),
+    star DOUBLE(2,1),
     quotes VARCHAR(255),
     author VARCHAR(255),
     translator VARCHAR(255),
