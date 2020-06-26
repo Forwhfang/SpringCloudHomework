@@ -2,11 +2,11 @@ use book;
 drop table if exists tb_book;
 create table tb_book(
     id int primary key NOT NULL AUTO_INCREMENT,
-    imgUrl TEXT,
-    name VARCHAR(255),
-    star DOUBLE(2,1),
-    quotes VARCHAR(255),
-    author VARCHAR(255),
+    imgUrl TEXT NOT NULL,
+    name VARCHAR(255) NOT NULL,
+    star DOUBLE(2,1) NOT NULL,
+    quotes VARCHAR(255) NOT NULL,
+    author VARCHAR(255) NOT NULL,
     translator VARCHAR(255),
     pubdate VARCHAR(255),
     press VARCHAR(255)
