@@ -120,9 +120,6 @@
 				 * 书籍修改按钮
 				 * @param: {Number} _id 书籍id
 				 * */
-				
-				console.log('点击修改按钮，这个函数触发了 4 次')
-
 				this.$router.push('/modification')
 				this.$nextTick(() => {
 					this.$root.Bus.$emit('editBook', this.books[_id])

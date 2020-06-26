@@ -96,6 +96,10 @@ export default {
             // 根据 selectedBook 赋值 data
         })
     },
+    beforeDestroy: function() {
+        this.$root.Bus.$off('createBook')
+        this.$root.Bus.$off('editBook')
+    },
 };
 </script>
 
