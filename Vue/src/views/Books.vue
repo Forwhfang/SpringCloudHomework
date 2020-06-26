@@ -14,7 +14,7 @@
 					<div class="books-book_content">
 						<div class="books-book-head">
 							<div class="books-book-title">{{books[books_index].title}}</div>
-							<img class="books-book-edit" src="../assets/books/edit.png" @click="bookEdit(books[books_index].id)" title="编辑"/>
+							<img class="books-book-edit" src="../assets/books/edit.png" @click="bookEdit(books[books_index])" title="编辑"/>
 							<img class="books-book-delete" src="../assets/books/delete.png" @click="bookDelete(books[books_index].id)" title="删除"/>
 						</div>
 						<div class="books-book-info">{{books[books_index].info}}</div>
@@ -115,14 +115,14 @@
 					this.$root.Bus.$emit('createBook')
 				})
 			},
-			bookEdit(_id){
+			bookEdit(_book){
 				/**
 				 * 书籍修改按钮
-				 * @param: {Number} _id 书籍id
+				 * @param: {Object} _book 书籍对象
 				 * */
 				this.$router.push('/modification')
 				this.$nextTick(() => {
-					this.$root.Bus.$emit('editBook', this.books[_id])
+					this.$root.Bus.$emit('editBook', _book)
 				})
 			},
 			async bookDelete(_id){
