@@ -40,7 +40,7 @@
                 </div>
             </div>
             <div class="submit-field">
-                <button class="submit">提交</button>
+                <button class="submit" @click="submit">提交</button>
             </div>
         </div>
     </div>
@@ -49,9 +49,6 @@
 <script>
 export default {
     name: "Modification",
-    props: {
-        book: Object,
-    },
     data() {
         return {
             title: '书籍',
@@ -75,20 +72,30 @@ export default {
             reader.onloadend = () => { this.imgUrl = reader.result }
             reader.readAsDataURL(file)
         },
-    },
-    watch: {
-        book(val) {
-            this.title = val ? '修改书籍' : '增加书籍'
-            this.imgUrl = val.imgUrl
-            this.name = val.name
-            this.author = val.author
-            this.translator = val.translator
-            this.press = val.press
-            this.pubdate = val.pubdate
-            this.quote = val.quote
-            this.star = val.star
+        cancel: function() {
+            this.$router.go(-1)
+            // TODO
+            // 触发事件
+        },
+        submit: function() {
+            this.$router.go(-1)
+            // TODO
+            // 网络请求
+            // 触发事件
         }
-    }
+    },
+    created(){
+        this.$root.Bus.$on('createBook', () => {
+            console.log('createBook')
+            this.title = '增加书籍'
+        })
+        this.$root.Bus.$on('editBook', (selectedBook) => {
+            console.log('editBook', selectedBook)
+            this.title = '修改书籍'
+            // TODO
+            // 根据 selectedBook 赋值 data
+        })
+    },
 };
 </script>
 

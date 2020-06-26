@@ -110,17 +110,23 @@
 				/**
 				 * 书籍新增按钮
 				 * */
-				// TODO WH 跳转到新增页面
-				alert('未跳转到新增页面，books中搜索')
+				this.$router.push('/modification')
+				this.$nextTick(() => {
+					this.$root.Bus.$emit('createBook')
+				})
 			},
 			bookEdit(_id){
 				/**
 				 * 书籍修改按钮
 				 * @param: {Number} _id 书籍id
 				 * */
-				// TODO WH 跳转到编辑页面
-				alert('未跳转到编辑页面')
-				console.log(_id)
+				
+				console.log('点击修改按钮，这个函数触发了 4 次')
+
+				this.$router.push('/modification')
+				this.$nextTick(() => {
+					this.$root.Bus.$emit('editBook', this.books[_id])
+				})
 			},
 			async bookDelete(_id){
 				/**
