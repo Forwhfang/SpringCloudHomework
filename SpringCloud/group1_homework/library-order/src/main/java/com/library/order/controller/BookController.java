@@ -9,15 +9,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.web.bind.annotation.*;
 import sun.misc.BASE64Decoder;
+import sun.misc.BASE64Encoder;
 
+import java.io.*;
+import java.util.*;
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.nio.file.Files;
 
 /**
  * @author Group One
@@ -49,7 +46,7 @@ public class BookController {
     @ResponseBody
     public String update(@RequestBody BookForm form) {
         try{
-            String newUrl = parseImg(form.getUrl());
+            String newUrl = handleBase64(form.getUrl());
             form.setUrl(newUrl);
             BookVO bookVO = bookService.save(form);
             String result = "{\"code\": 0,\"msg\": \"success\"}";
@@ -68,6 +65,8 @@ public class BookController {
     @ResponseBody
     public BookVO findById(@PathVariable("id") Integer id) {
         BookVO bookVO = bookService.findById(id);
+        // 转义本地文件
+        bookVO.setUrl(handleLocalImage(bookVO.getUrl()));
         return bookVO;
     }
 
@@ -77,6 +76,12 @@ public class BookController {
     public Object findAll() {
         try{
             List<BookVO> bookVOList = bookService.findAll();
+            // 转义本地文件
+            Iterator iter = bookVOList.iterator();
+            while (iter.hasNext()){
+                BookVO temp = (BookVO) iter.next();
+                temp.setUrl(handleLocalImage(temp.getUrl()));
+            }
             Map<String,Object> map = new HashMap<>();
             map.put("data", bookVOList);
             map.put("code", 0);
@@ -92,10 +97,12 @@ public class BookController {
     @CrossOrigin
     @ResponseBody
     public Object add(@RequestBody BookForm form){
-        String newUrl = parseImg(form.getUrl());
+        String originUrl = form.getUrl();
+        String newUrl = handleBase64(form.getUrl());
         form.setUrl(newUrl);
         try{
             BookVO bookVO = bookService.save(form);
+            bookVO.setUrl(originUrl);
             Map<String,Object> map = new HashMap<>();
             map.put("code",0);
             map.put("msg","添加成功");
@@ -110,12 +117,12 @@ public class BookController {
         }
     }
 
-    public String parseImg(String requestImg) {
+    private String handleBase64(String requestImg) {
         if (requestImg.indexOf("data:image/") != -1) {
             int firstIndex = requestImg.indexOf("data:image/") + 11;
             int index1 = requestImg.indexOf(";base64,");
             String type = requestImg.substring(firstIndex, index1);
-            String fileName = "E:/uploadFiles/" + UUID.randomUUID().toString() + "." + type;
+            String fileName = "D:/uploadFiles/" + UUID.randomUUID().toString() + "." + type;
             //开始转码，然后将当前文件写入数据。
             System.out.println(fileName);
             BASE64Decoder decoder = new BASE64Decoder();
@@ -150,7 +157,46 @@ public class BookController {
             }
         }
         return requestImg;
-
     }
+
+    private String handleLocalImage(String imagePath){
+        // not local file
+        if (imagePath.indexOf("/images.do?src=") == -1){
+            return imagePath;
+        }
+        // 获取文件路径
+        int firstIndex = imagePath.indexOf("/images.do?src=") + "/images.do?src=".length();
+        String filePath = imagePath.substring(firstIndex);
+        System.out.println(filePath);
+        File file = new File(filePath);
+        InputStream os = null;
+        try{
+            // 读取图片并解码
+            os = new FileInputStream(file);
+            BASE64Encoder encoder = new BASE64Encoder();
+            byte[] imageRaw = Files.readAllBytes(file.toPath());
+            String imageBase64 = encoder.encode(imageRaw).replace("\r\n","");
+            System.out.println("encoded image: " + imageBase64);
+
+            // 构造头部并返回
+            String type = imagePath.substring(imagePath.lastIndexOf(".") + 1);
+            return "data:image/" + type + ";base64," + imageBase64;
+        } catch (FileNotFoundException e){
+            System.out.println("file " + filePath + "not exist");
+        } catch (Exception e){
+            e.printStackTrace();
+        } finally {
+            if (os != null) {
+                try {
+                    os.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        // 转码失败
+        return imagePath;
+    }
+
 
 }
