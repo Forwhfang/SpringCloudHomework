@@ -23,7 +23,34 @@
 				 * @return: {Array} 书籍信息列表 item: {id, ...}
 				 * */
 				alert('my-api.vue/getAllBooks 未对接接口 目前使用的是测试数据')
-				return null;
+				return {
+					code: 0,
+					msg: 'success',
+					data: [
+						/* 测试数据 */
+						{
+							"id": "1",
+							"imgUrl":"https://img1.doubanio.com/view/subject/s/public/s1070959.jpg",
+							"name": "红楼梦",
+							"star": 9.6,
+							"quotes": "都云作者痴，谁解其中味？",
+							"author":"[清] 曹雪芹 著",
+							"translator":"",
+							"pubdate":"1996-12",
+							"press":"人民文学出版社"
+						},{
+							"id": "2",
+							"imgUrl":"https://img3.doubanio.com/view/subject/s/public/s29053580.jpg",
+							"name": "活着",
+							"star": 9.4,
+							"quotes": "生的苦难与伟大",
+							"author":"余华",
+							"translator":"",
+							"pubdate":"2012-8-1",
+							"press":"作家出版社"
+						}
+					]
+				};
 			},
 			async deleteBookById(_id){
 				/**
@@ -33,7 +60,10 @@
 				 * */
 				alert('my-api.vue/deleteBookById 未对接接口')
 				console.log(_id)
-				return null;
+				return {
+					code: 0,
+					msg: 'success'
+				};
 			},
 			async updateBook(book) {
 				let option = {

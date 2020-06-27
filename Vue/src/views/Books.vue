@@ -8,18 +8,18 @@
 			</div>
 		</div>
 		<div class="books_root_body">
-			<div v-for="(books_index, index) in booksShowing" :key="index">
+			<div v-for="(books_index, index) in booksShowing" :key="books_index">
 				<div class="books_root_body_book">
-					<img class="books-book_image" :src="books[books_index].imgSrc" :ref="`book_image_${index}`" @load="justifyImage(index, 100)"/>
+					<img class="books-book_image" :src="books[books_index].imgUrl" :ref="`book_image_${index}`" @load="justifyImage(index, 100)"/>
 					<div class="books-book_content">
 						<div class="books-book-head">
-							<div class="books-book-title">{{books[books_index].title}}</div>
-							<img class="books-book-edit" src="../assets/books/edit.png" @click="bookEdit(books[books_index])" title="编辑"/>
-							<img class="books-book-delete" src="../assets/books/delete.png" @click="bookDelete(books[books_index].id)" title="删除"/>
+							<div class="books-book-title">{{books[books_index].name}}</div>
+							<img class="books-book-edit" src="../assets/books/edit.png" @click="bookEdit(books_index)" title="编辑"/>
+							<img class="books-book-delete" src="../assets/books/delete.png" @click="bookDelete(books_index)" title="删除"/>
 						</div>
-						<div class="books-book-info">{{books[books_index].info}}</div>
-						<my-rate :total-score="10" :rate="books[books_index].currScore/10" :size="15"></my-rate>
-						<div class="books-book-quote">{{'—— ' + books[books_index].quote}}</div>
+						<div class="books-book-info">{{bookInfos[books_index]}}</div>
+						<my-rate :total-score="10" :rate="books[books_index].star/10" :size="15"></my-rate>
+						<div class="books-book-quote">{{'—— ' + books[books_index].quotes}}</div>
 					</div>
 				</div>
 			</div>
@@ -44,52 +44,46 @@
 		data() {
 			return {
 				searchValue: '',
-				books: [
-					/* 测试数据 */
-					{
-						id: 0,
-						imgSrc: require('../assets/test/book1.jpg'),
-						title: '红楼梦',
-						info: '[清] 曹雪芹 著 / 人民文学出版社 / 1996-12 / 59.70元',
-						currScore: 9.6,
-						quote: '都云作者痴，谁解其中味？'
-					},
-					{
-						id: 1,
-						imgSrc: require('../assets/test/book2.jpg'),
-						title: '活着',
-						info: '余华 / 作家出版社 / 2012-8-1 / 20.00元',
-						currScore: 9.4,
-						quote: '生的苦难与伟大'
-					},
-					{
-						id: 0,
-						imgSrc: require('../assets/test/book1.jpg'),
-						title: '红楼梦2',
-						info: '[清] 曹雪芹 著 / 人民文学出版社 / 1996-12 / 59.70元',
-						currScore: 9.6,
-						quote: '都云作者痴，谁解其中味？'
-					},
-					{
-						id: 1,
-						imgSrc: require('../assets/test/book2.jpg'),
-						title: '活着2',
-						info: '余华 / 作家出版社 / 2012-8-1 / 20.00元',
-						currScore: 9.4,
-						quote: '生的苦难与伟大'
-					}
-				],
+				books: [],
 				booksShowing: []
 			}
 		},
+		computed: {
+			bookInfos(){
+				/**
+				 * 构建info
+				 * @return: {Array}
+				 * */
+				let infos = [];
+				this.books.forEach(book => {
+					let info = '';
+					if(book.author) info += `${book.author} / `;
+					if(book.translator) info += `${book.translator} / `;
+					if(book.pubdate) info += `${book.pubdate} / `;
+					if(book.press) info += `${book.press} / `;
+					if(info) info = info.slice(0, -3);
+					infos.push(info);
+				})
+				return infos;
+			}
+		},
 		async mounted(){
-			// sj--未完成 调用API初始化 this.books
-			let booksRe = await this.$refs.my_api.getAllBooks();
-			console.log(booksRe)
-			//
+			await this.initBooks();
 			for(let i=0; i<this.books.length; i++) this.booksShowing.push(i);
 		},
 		methods:{
+			async initBooks(){
+				let getAllBooksRe = await this.$refs.my_api.getAllBooks();
+				if(getAllBooksRe.code === 0){
+					// success
+					this.books = getAllBooksRe.data;
+				}
+				else console.log(getAllBooksRe);
+				return {
+					code: getAllBooksRe.code,
+					msg: getAllBooksRe.msg
+				}
+			},
 			search(){
 				/**
 				 * 搜索按钮
@@ -103,7 +97,13 @@
 				}
 				this.booksShowing = [];
 				this.books.forEach((book, index) =>{
-					if(book.title.indexOf(this.searchValue) > -1 || book.info.indexOf(this.searchValue) > -1) this.booksShowing.push(index);
+					if(book.name.indexOf(this.searchValue) > -1
+						|| book.author.indexOf(this.searchValue) > -1
+						|| book.translator.indexOf(this.searchValue) > -1
+						|| book.pubdate.indexOf(this.searchValue) > -1
+						|| book.press.indexOf(this.searchValue) > -1) {
+						this.booksShowing.push(index);
+					}
 				})
 			},
 			bookCreate(){
@@ -115,25 +115,27 @@
 					this.$root.Bus.$emit('createBook')
 				})
 			},
-			bookEdit(_book){
+			bookEdit(_index){
 				/**
 				 * 书籍修改按钮
-				 * @param: {Object} _book 书籍对象
+				 * @param: {Number} _index books对应的index
 				 * */
 				this.$router.push('/modification')
 				this.$nextTick(() => {
-					this.$root.Bus.$emit('editBook', _book)
+					this.$root.Bus.$emit('editBook', this.books[_index])
 				})
 			},
-			async bookDelete(_id){
+			async bookDelete(_index){
 				/**
 				 * 书籍删除按钮
-				 * @param: {Number} _id 书籍id
+				 * @param: {Number} _index books对应的index
 				 * */
-				// sj--未完成 删除书籍
-				console.log(_id)
-				let deleteRe = await this.$refs.my_api.deleteBookById(_id);
-				console.log(deleteRe)
+				let deleteRe = await this.$refs.my_api.deleteBookById(this.books[_index].id);
+				if(deleteRe.code === 0) {
+					this.books.splice(_index, 1);
+					// 刷新booksShowing
+					this.search();
+				}
 			},
 			justifyImage(_index, _width){
 				/**
