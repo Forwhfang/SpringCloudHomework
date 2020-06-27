@@ -10,7 +10,7 @@
 		<div class="books_root_body">
 			<div v-for="(books_index, index) in booksShowing" :key="books_index">
 				<div class="books_root_body_book">
-					<img class="books-book_image" :src="books[books_index].imgUrl" :ref="`book_image_${index}`" @load="justifyImage(index, 100)"/>
+					<img v-show="false" class="books-book_image" :src="books[books_index].imgUrl" :ref="`book_image_${index}`" @load="justifyImage(index, 100)"/>
 					<div class="books-book_content">
 						<div class="books-book-head">
 							<div class="books-book-title">{{books[books_index].name}}</div>
@@ -150,6 +150,7 @@
 				let scale = _width/originWidth;
 				this.$refs[`book_image_${_index}`][0].width = _width;
 				this.$refs[`book_image_${_index}`][0].height = originHeight * scale;
+				this.$refs[`book_image_${_index}`][0].style.display = 'flex';
 			}
 		},
 		created: function() {
