@@ -67,23 +67,7 @@
 				return infos;
 			}
 		},
-		async mounted(){
-			await this.initBooks();
-			for(let i=0; i<this.books.length; i++) this.booksShowing.push(i);
-		},
 		methods:{
-			async initBooks(){
-				let getAllBooksRe = await this.$refs.my_api.getAllBooks();
-				if(getAllBooksRe.code === 0){
-					// success
-					this.books = getAllBooksRe.data;
-				}
-				else console.log(getAllBooksRe);
-				return {
-					code: getAllBooksRe.code,
-					msg: getAllBooksRe.msg
-				}
-			},
 			search(){
 				/**
 				 * 搜索按钮
@@ -130,13 +114,31 @@
 				 * 书籍删除按钮
 				 * @param: {Number} _index books对应的index
 				 * */
-				let deleteRe = await this.$refs.my_api.deleteBookById(this.books[_index].id);
-				if(deleteRe.code === 0) {
-					this.books.splice(_index, 1);
-					// 刷新booksShowing
-					this.search();
+				if(confirm(`您确定要删除《${this.books[_index].name}》吗？`)){
+					let deleteRe = await this.$refs.my_api.deleteBookById(this.books[_index].id);
+					if(deleteRe.code === 0) {
+						this.books.splice(_index, 1);
+						// 刷新booksShowing
+						this.search();
+					}
 				}
 			},
+			// getImgPath(_url){
+			// 	/**
+			// 	 * 解决图片403问题：使用CDN获取图片
+			// 	 * */
+			// 	if(_url !== undefined){
+			// 		if(_url.substr(0, 8) === 'https://'){
+			// 			// 网络图片重构路径
+			// 			let subUrl = _url.substring(7);
+			// 			return 'https://images.weserv.nl/?url=' + subUrl;
+			// 		}
+			// 		else {
+			// 			// 其他，直接返回（应该只有base64吧）
+			// 			return _url;
+			// 		}
+			// 	}
+			// },
 			justifyImage(_index, _width){
 				/**
 				 * 图片按设置宽度进行等比例放缩
@@ -161,6 +163,18 @@
 				// TODO
 				// 修改成功，更新列表
 			})
+		},
+		mounted: async function() {
+			// 初始化 books、booksShowing
+			let getAllBooksRe = await this.$refs.my_api.getAllBooks();
+			if(getAllBooksRe.code === 0){// success
+				this.books = [];
+				while(getAllBooksRe.data.length > 0){   // 倒叙显示
+					this.books.push(getAllBooksRe.data.pop());
+				}
+				for(let i=0; i<this.books.length; i++) this.booksShowing.push(i);
+			}
+			else console.log(getAllBooksRe);
 		},
 		beforeDestroy: function() {
 			this.$root.Bus.$off('createBookSuccess')

@@ -36,10 +36,10 @@ public class BookController {
     public String delete(@PathVariable("id") Integer id) {
         try{
             bookService.delete(id);
-            String result = "{\"code\": 0,\"msg\":删除成功}";
+            String result = "{\"code\": 0,\"msg\":\"删除成功\"}";
             return result;
         } catch (Exception e) {
-            String result = "{\"code\": 500,\"msg\":system error}";
+            String result = "{\"code\": 500,\"msg\":\"system error\"}";
             return result;
         }
     }
@@ -55,10 +55,10 @@ public class BookController {
             String result = "{\"code\": 0,\"msg\": \"success\"}";
             return result;
         } catch (DataIntegrityViolationException e){
-            String result = "{\"code\": 400,\"msg\":必填字段不可为空}";
+            String result = "{\"code\": 400,\"msg\":\"必填字段不可为空\"}";
             return result;
         }catch (Exception e){
-            String result = "{\"code\": 500,\"msg\":system error}";
+            String result = "{\"code\": 500,\"msg\":\"system error\"}";
             return result;
         }
     }
@@ -83,7 +83,7 @@ public class BookController {
             map.put("msg", "获取书籍列表成功");
             return map;
         } catch(Exception e) {
-            String result = "{\"code\": 500,\"msg\":system error}";
+            String result = "{\"code\": 500,\"msg\":\"system error\"}";
             return result;
         }
     }
@@ -102,10 +102,10 @@ public class BookController {
             map.put("book",bookVO);
             return map;
         } catch (DataIntegrityViolationException e){
-            String result = "{\"code\": 400,\"msg\":必填字段不可为空}";
+            String result = "{\"code\": 400,\"msg\":\"必填字段不可为空\"}";
             return result;
         } catch (Exception e){
-            String result = "{\"code\": 500,\"msg\":system error}";
+            String result = "{\"code\": 500,\"msg\":\"system error\"}";
             return result;
         }
     }
