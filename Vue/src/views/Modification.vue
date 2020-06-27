@@ -101,7 +101,6 @@ export default {
         },
         cancel: function() {
             this.$router.go(-1)
-            // 触发事件
         },
         helper: function(elemId, hint) {
             let elem = document.getElementById(elemId)
@@ -135,7 +134,6 @@ export default {
             let isLegal = this.validate()
             if (isLegal) {
                 let formData = {
-                    id: this.id,
                     imgUrl: this.imgUrl,
                     name: this.name,
                     author: this.author,
@@ -146,21 +144,36 @@ export default {
                     star: this.star,
                 }
                 if (this.title === '增加书籍') {
-                    let result = await this.$refs.api.createBook()
-                    console.log(result)
-                    // 路由跳转 this.$router.go(-1)
-                    // 触发事件
+                    let result = await this.$refs.api.createBook(formData)
+                    if (result && result.data.code ===  0) {
+                        alert('增加成功')
+                        this.$router.push('/books')
+                        this.$nextTick(() => {
+                            // TODO: 使用 result 代替 formData
+                            this.$root.Bus.$emit('createBookSuccess', formData)
+                        })
+                    } else  {
+                        alert('增加失败')
+                    }
                 }
                 if (this.title === '修改书籍') {
+                    formData.id = this.id
                     let result = await this.$refs.api.updateBook(formData)
-                    console.log(result)
-                    // 路由跳转 this.$router.go(-1)
-                    // 触发事件
+                    if (result && result.data.code ===  0) {
+                        alert('修改成功')
+                        this.$router.push('/books')
+                        this.$nextTick(() => {
+                            // TODO: 使用 result 代替 formData
+                            this.$root.Bus.$emit('editBookSuccess', formData)
+                        })
+                    } else  {
+                        alert('修改失败')
+                    }
                 }
             }
         }
     },
-    created(){
+    created: function() {
         this.$root.Bus.$on('createBook', () => {
             this.title = '增加书籍'
         })

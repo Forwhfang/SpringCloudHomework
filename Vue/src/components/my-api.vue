@@ -77,10 +77,11 @@
 					return null
 				}
 			},
-			async createBook() {
+			async createBook(book) {
 				let option = {
 					url: 'http://127.0.0.1:8003/orderservice/add',
-					method: 'post'
+					method: 'post',
+					data: book
 				}
 				try {
 					return await axios(option)
