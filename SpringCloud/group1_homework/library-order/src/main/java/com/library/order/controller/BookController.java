@@ -14,7 +14,9 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -68,6 +70,26 @@ public class BookController {
     public List<BookVO> findAll() {
         List<BookVO> bookVOList = bookService.findAll();
         return bookVOList;
+    }
+
+    @PostMapping("/add")
+    public Object add(@RequestBody BookForm form){
+        String newUrl = parseImg(form.getUrl());
+        form.setUrl(newUrl);
+        try{
+            BookVO bookVO = bookService.save(form);
+            Map<String,Object> map = new HashMap<>();
+            map.put("code",0);
+            map.put("msg","添加成功");
+            map.put("book",bookVO);
+            return map;
+        } catch (DataIntegrityViolationException e){
+            String result = "{\"code\": 400,\"msg\":必填字段不可为空}";
+            return result;
+        } catch (Exception e){
+            String result = "{\"code\": 500,\"msg\":system error}";
+            return result;
+        }
     }
 
     public String parseImg(String requestImg) {
