@@ -30,13 +30,9 @@ public class BookController {
     @Autowired
     private BookService bookService;
 
-    @PostMapping("/save")
-    public BookVO save(@RequestBody BookForm form) {
-        BookVO bookVO = bookService.save(form);
-        return bookVO;
-    }
-
     @DeleteMapping("/delete/{id}")
+    @CrossOrigin
+    @ResponseBody
     public String delete(@PathVariable("id") Integer id) {
         try{
             bookService.delete(id);
@@ -68,12 +64,16 @@ public class BookController {
     }
 
     @GetMapping("/findById/{id}")
+    @CrossOrigin
+    @ResponseBody
     public BookVO findById(@PathVariable("id") Integer id) {
         BookVO bookVO = bookService.findById(id);
         return bookVO;
     }
 
     @GetMapping("/findAll")
+    @CrossOrigin
+    @ResponseBody
     public Object findAll() {
         try{
             List<BookVO> bookVOList = bookService.findAll();
@@ -89,6 +89,8 @@ public class BookController {
     }
 
     @PostMapping("/add")
+    @CrossOrigin
+    @ResponseBody
     public Object add(@RequestBody BookForm form){
         String newUrl = parseImg(form.getUrl());
         form.setUrl(newUrl);
