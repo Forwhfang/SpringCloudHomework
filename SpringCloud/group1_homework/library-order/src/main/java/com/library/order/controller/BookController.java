@@ -38,8 +38,14 @@ public class BookController {
 
     @DeleteMapping("/delete/{id}")
     public String delete(@PathVariable("id") Integer id) {
-        bookService.delete(id);
-        return "删除成功";
+        try{
+            bookService.delete(id);
+            String result = "{\"code\": 0,\"msg\":删除成功}";
+            return result;
+        } catch (Exception e) {
+            String result = "{\"code\": 500,\"msg\":system error}";
+            return result;
+        }
     }
 
     @PutMapping("/update")
@@ -68,9 +74,18 @@ public class BookController {
     }
 
     @GetMapping("/findAll")
-    public List<BookVO> findAll() {
-        List<BookVO> bookVOList = bookService.findAll();
-        return bookVOList;
+    public Object findAll() {
+        try{
+            List<BookVO> bookVOList = bookService.findAll();
+            Map<String,Object> map = new HashMap<>();
+            map.put("data", bookVOList);
+            map.put("code", 0);
+            map.put("msg", "获取书籍列表成功");
+            return map;
+        } catch(Exception e) {
+            String result = "{\"code\": 500,\"msg\":system error}";
+            return result;
+        }
     }
 
     @PostMapping("/add")
