@@ -40,16 +40,6 @@ public class BookServiceImpl implements BookService{
     }
 
     @Override
-    public BookVO update(BookForm form) {
-        Book book = new Book();
-        BeanUtils.copyProperties(form, book);
-        book = bookRepository.saveAndFlush(book);
-        BookVO bookVO = new BookVO();
-        BeanUtils.copyProperties(book, bookVO);
-        return bookVO;
-    }
-
-    @Override
     public BookVO findById(Integer id) {
         Optional<Book> book = bookRepository.findById(id);
         BookVO bookVO = new BookVO();

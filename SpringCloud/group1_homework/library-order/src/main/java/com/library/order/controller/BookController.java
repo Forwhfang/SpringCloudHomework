@@ -49,7 +49,7 @@ public class BookController {
         try{
             String newUrl = parseImg(form.getUrl());
             form.setUrl(newUrl);
-            BookVO bookVO = bookService.update(form);
+            BookVO bookVO = bookService.save(form);
             String result = "{\"code\": 0,\"msg\": \"success\"}";
             return result;
         } catch (DataIntegrityViolationException e){

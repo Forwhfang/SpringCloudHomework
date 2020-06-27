@@ -16,8 +16,6 @@ public interface BookService {
 
     void delete(Integer id);
 
-    BookVO update(BookForm form);
-
     BookVO findById(Integer id);
 
     List<BookVO> findAll();
