@@ -132,7 +132,7 @@ export default {
                 this.helper('star', '评分不能为空')
                 return false
             }
-            if (/^([0-9]*\.?[0-9]+|[0-9]+\.?[0-9]*)([eE][+-]?[0-9]+)?$/.test(this.star)
+            if (!/^([0-9]*\.?[0-9]+|[0-9]+\.?[0-9]*)$/.test(this.star)
                 || parseFloat(this.star) <= 0
                 || parseFloat(this.star) >= 10
             ) {
