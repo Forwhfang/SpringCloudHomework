@@ -5,7 +5,7 @@
 </template>
 
 <script>
-	// import axios from 'axios'
+	import axios from 'axios'
 	export default {
 		name: "myApi",
 		data(){
@@ -34,7 +34,30 @@
 				alert('my-api.vue/deleteBookById 未对接接口')
 				console.log(_id)
 				return null;
-			}
+			},
+			async updateBook(book) {
+				let option = {
+					url: 'http://127.0.0.1:8003/orderservice/update',
+					method: 'put',
+					data: book
+				}
+				try {
+					return await axios(option)
+				} catch {
+					return null
+				}
+			},
+			async createBook() {
+				let option = {
+					url: 'http://127.0.0.1:8003/orderservice/add',
+					method: 'post'
+				}
+				try {
+					return await axios(option)
+				} catch {
+					return null
+				}
+			},
 		}
 	}
 </script>
