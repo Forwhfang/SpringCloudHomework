@@ -26,4 +26,7 @@ public class BookVO {
     public void setUrl(String newUrl) {
         this.imgUrl = newUrl;
     }
+
+    public Integer getId() {return id;}
+    public void setId(Integer newId) { this.id = newId; }
 }
