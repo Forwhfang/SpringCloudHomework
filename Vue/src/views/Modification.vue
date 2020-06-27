@@ -4,7 +4,7 @@
             <div class="form-head">{{title}}</div>
             <img :src="require('../assets/modification/cancel.png')" @click="cancel" class="cancel">
             <div class="flex-row">
-                <img class="poster" :src="imgUrl" @click="chooseFile">
+                <img id="poster" class="poster" :src="imgUrl" @click="chooseFile">
                 <input ref="filesInput" @change="uploadFile" type="file" accept="image/png, image/jpeg" style="display: none;" />
                 <div class="text">
                     <div class="form-item">
@@ -112,6 +112,10 @@ export default {
 			}
         },
         validate: function() {
+            if (this.imgUrl.indexOf('defaultImage') !== -1) { // TODO
+                this.helper('poster')
+                return false
+            }
             if (!this.name) {
                 this.helper('name', '书名不能为空')
                 return false
@@ -126,6 +130,13 @@ export default {
             }
             if (!this.star) {
                 this.helper('star', '评分不能为空')
+                return false
+            }
+            if (/^([0-9]*\.?[0-9]+|[0-9]+\.?[0-9]*)([eE][+-]?[0-9]+)?$/.test(this.star)
+                || parseFloat(this.star) <= 0
+                || parseFloat(this.star) >= 10
+            ) {
+                this.helper('star', '评分只能在 0 ~ 10 之间')
                 return false
             }
             return true
@@ -143,28 +154,30 @@ export default {
                     quotes: this.quotes,
                     star: this.star,
                 }
-                if (this.title === '增加书籍') {
+                if (this.title === '书籍') {
+                    alert('页面错误')
+                    this.$router.go(-1)
+                }
+                else if (this.title === '增加书籍') {
                     let result = await this.$refs.api.createBook(formData)
                     if (result && result.data.code ===  0) {
                         alert('增加成功')
                         this.$router.push('/books')
                         this.$nextTick(() => {
-                            // TODO: 使用 result 代替 formData
-                            this.$root.Bus.$emit('createBookSuccess', formData)
+                            this.$root.Bus.$emit('createBookSuccess', result.data.book)
                         })
                     } else  {
                         alert('增加失败')
                     }
                 }
-                if (this.title === '修改书籍') {
+                else if (this.title === '修改书籍') {
                     formData.id = this.id
                     let result = await this.$refs.api.updateBook(formData)
                     if (result && result.data.code ===  0) {
                         alert('修改成功')
                         this.$router.push('/books')
                         this.$nextTick(() => {
-                            // TODO: 使用 result 代替 formData
-                            this.$root.Bus.$emit('editBookSuccess', formData)
+                            this.$root.Bus.$emit('editBookSuccess', result.data.book)
                         })
                     } else  {
                         alert('修改失败')
