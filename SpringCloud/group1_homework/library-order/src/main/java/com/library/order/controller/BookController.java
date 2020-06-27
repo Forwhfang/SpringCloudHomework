@@ -97,10 +97,12 @@ public class BookController {
     @CrossOrigin
     @ResponseBody
     public Object add(@RequestBody BookForm form){
+        String originUrl = form.getUrl();
         String newUrl = handleBase64(form.getUrl());
         form.setUrl(newUrl);
         try{
             BookVO bookVO = bookService.save(form);
+            bookVO.setUrl(originUrl);
             Map<String,Object> map = new HashMap<>();
             map.put("code",0);
             map.put("msg","添加成功");
