@@ -149,7 +149,23 @@
 				this.$refs[`book_image_${_index}`][0].width = _width;
 				this.$refs[`book_image_${_index}`][0].height = originHeight * scale;
 			}
-		}
+		},
+		created: function() {
+			this.$root.Bus.$on('createBookSuccess', (newBook) => {
+				console.log('createBookSuccess', newBook)
+				// TODO
+				// 新增成功，更新列表
+			})
+			this.$root.Bus.$on('editBookSuccess', (newBook) => {
+				console.log('editBookSuccess', newBook)
+				// TODO
+				// 修改成功，更新列表
+			})
+		},
+		beforeDestroy: function() {
+			this.$root.Bus.$off('createBookSuccess')
+			this.$root.Bus.$off('editBookSuccess')
+		},
 	}
 </script>
 

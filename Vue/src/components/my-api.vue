@@ -5,7 +5,7 @@
 </template>
 
 <script>
-	// import axios from 'axios'
+	import axios from 'axios'
 	export default {
 		name: "myApi",
 		data(){
@@ -64,7 +64,31 @@
 					code: 0,
 					msg: 'success'
 				};
-			}
+			},
+			async updateBook(book) {
+				let option = {
+					url: 'http://127.0.0.1:8003/orderservice/update',
+					method: 'put',
+					data: book
+				}
+				try {
+					return await axios(option)
+				} catch {
+					return null
+				}
+			},
+			async createBook(book) {
+				let option = {
+					url: 'http://127.0.0.1:8003/orderservice/add',
+					method: 'post',
+					data: book
+				}
+				try {
+					return await axios(option)
+				} catch {
+					return null
+				}
+			},
 		}
 	}
 </script>

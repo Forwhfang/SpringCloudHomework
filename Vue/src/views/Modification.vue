@@ -19,8 +19,8 @@
             </div>
             <div>
                 <div class="form-item">
-                    <label class="item-label" for="quote">简介<span class="mandatory">*</span></label>
-                    <input class="item-input" id="quote" v-model="quote" />
+                    <label class="item-label" for="quotes">简介<span class="mandatory">*</span></label>
+                    <input class="item-input" id="quotes" v-model="quotes" />
                 </div>
                 <div class="form-item">
                     <label class="item-label" for="star">评分<span class="mandatory">*</span></label>
@@ -43,14 +43,17 @@
                 <button class="submit" @click="submit">提交</button>
             </div>
         </div>
+        <my-api ref="api"></my-api>
     </div>
 </template>
 
 <script>
+import myApi from '../components/my-api.vue';
 import datepicker from "vue-datepicker/vue-datepicker-es6.vue";
 export default {
     name: "Modification",
     components: {
+        myApi,
         datepicker
     },
     data() {
@@ -63,7 +66,7 @@ export default {
             translator: '',
             press: '',
             pubdate: { time: '' },
-            quote: '',
+            quotes: '',
             star: '',
             dateOption: {
                 type: 'day',
@@ -98,8 +101,6 @@ export default {
         },
         cancel: function() {
             this.$router.go(-1)
-            // TODO
-            // 触发事件
         },
         helper: function(elemId, hint) {
             let elem = document.getElementById(elemId)
@@ -119,8 +120,8 @@ export default {
                 this.helper('author', '作者不能为空')
                 return false
             }
-            if (!this.quote) {
-                this.helper('quote', '简介不能为空')
+            if (!this.quotes) {
+                this.helper('quotes', '简介不能为空')
                 return false
             }
             if (!this.star) {
@@ -129,38 +130,64 @@ export default {
             }
             return true
         },
-        submit: function() {
+        submit: async function() {
             let isLegal = this.validate()
             if (isLegal) {
                 let formData = {
-                    id: this.id,
                     imgUrl: this.imgUrl,
                     name: this.name,
                     author: this.author,
                     translator: this.translator,
                     press: this.press,
                     pubdate: this.pubdate.time,
-                    quote: this.quote,
+                    quotes: this.quotes,
                     star: this.star,
                 }
-                console.log(formData)
-                this.$router.go(-1)
-                // TODO
-                // 网络请求
-                // 触发事件
+                if (this.title === '增加书籍') {
+                    let result = await this.$refs.api.createBook(formData)
+                    if (result && result.data.code ===  0) {
+                        alert('增加成功')
+                        this.$router.push('/books')
+                        this.$nextTick(() => {
+                            // TODO: 使用 result 代替 formData
+                            this.$root.Bus.$emit('createBookSuccess', formData)
+                        })
+                    } else  {
+                        alert('增加失败')
+                    }
+                }
+                if (this.title === '修改书籍') {
+                    formData.id = this.id
+                    let result = await this.$refs.api.updateBook(formData)
+                    if (result && result.data.code ===  0) {
+                        alert('修改成功')
+                        this.$router.push('/books')
+                        this.$nextTick(() => {
+                            // TODO: 使用 result 代替 formData
+                            this.$root.Bus.$emit('editBookSuccess', formData)
+                        })
+                    } else  {
+                        alert('修改失败')
+                    }
+                }
             }
         }
     },
-    created(){
+    created: function() {
         this.$root.Bus.$on('createBook', () => {
-            console.log('createBook')
             this.title = '增加书籍'
         })
         this.$root.Bus.$on('editBook', (selectedBook) => {
-            console.log('editBook', selectedBook)
             this.title = '修改书籍'
-            // TODO
-            // 根据 selectedBook 赋值 data
+            this.id = selectedBook.id
+            this.imgUrl = selectedBook.imgUrl
+            this.name = selectedBook.name
+            this.author = selectedBook.author
+            this.translator = selectedBook.translator
+            this.press = selectedBook.press
+            this.pubdate.time = selectedBook.pubdate
+            this.star = selectedBook.star
+            this.quotes = selectedBook.quotes
         })
     },
     beforeDestroy: function() {

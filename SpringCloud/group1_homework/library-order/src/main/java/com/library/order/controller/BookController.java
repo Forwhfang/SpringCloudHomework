@@ -43,6 +43,7 @@ public class BookController {
     }
 
     @PutMapping("/update")
+    @CrossOrigin
     @ResponseBody
     public String update(@RequestBody BookForm form) {
         try{
