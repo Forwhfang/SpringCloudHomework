@@ -44,13 +44,16 @@ public class BookController {
     @PutMapping("/update")
     @CrossOrigin
     @ResponseBody
-    public String update(@RequestBody BookForm form) {
+    public Object update(@RequestBody BookForm form) {
         try{
             String newUrl = handleBase64(form.getUrl());
             form.setUrl(newUrl);
             BookVO bookVO = bookService.save(form);
-            String result = "{\"code\": 0,\"msg\": \"success\"}";
-            return result;
+            Map<String,Object> map = new HashMap<>();
+            map.put("code", 0);
+            map.put("msg", "修改成功");
+            map.put("book", bookVO);
+            return map;
         } catch (DataIntegrityViolationException e){
             String result = "{\"code\": 400,\"msg\":\"必填字段不可为空\"}";
             return result;
